@@ -2,13 +2,6 @@ name: Build SU2
 
 on: [push]
 
-inputs:
-  configure_options:
-    description: 'Options for configuration'
-    required: false
-    default: '--prefix=$PWD -Denable-pywrapper=true'
-    
-    
 jobs:
   build:
     runs-on: ubuntu-latest

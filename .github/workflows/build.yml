@@ -1,0 +1,34 @@
+name: Build SU2
+
+on: [push]
+
+inputs:
+  configure_options:
+    description: 'Options for configuration'
+    required: false
+    default: '--prefix=$PWD -Denable-pywrapper=true'
+    
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Dependencies
+      run: |
+        sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+        sudo apt-get update -qq
+        sudo apt-get install -qq build-essential python3-numpy python3-scipy libopenmpi-dev openmpi-bin swig python3-mpi4py
+    - name: Bootstrap and Configure
+      run: |
+        ./meson.py build $INPUT_CONFIGURE_OPTIONS
+        ./meson.py build --reconfigure --optimization=2
+        ./meson.py build --reconfigure --warnlevel=2
+    - name: Build
+      run: |
+        ./ninja -C build install
+        export SU2_RUN=$PWD/bin
+        export SU2_HOME=$PWD
+        export PATH=$PATH:$SU2_RUN
+        export PYTHONPATH=$PYTHONPATH:$SU2_RUN
+

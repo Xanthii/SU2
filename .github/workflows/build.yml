@@ -36,23 +36,17 @@ jobs:
       run: |
         mkdir bin
     - name: Normal
-      env:
-        NAME: '-Denable-pywrapper=true'
       uses: actions/download-artifact@v1
       with:
-        name: "$NAME"
+        name: '-Denable-pywrapper=true'
     - name: Reverse
-      env:
-        NAME: '-Denable-autodiff=true -Denable-normal=false'
       uses: actions/download-artifact@v1
       with:
-        name: "$NAME"
+        name: '-Denable-autodiff=true -Denable-normal=false'
     - name: Forward
-      env:
-        NAME: '-Denable-directdiff=true -Denable-normal=false'
       uses: actions/download-artifact@v1
       with:
-        name: "$NAME"
+        name: '-Denable-directdiff=true -Denable-normal=false'
     - name: Move binaries
       run: |
         mv '-Denable-pywrapper=true'/*  bin/*

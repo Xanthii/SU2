@@ -14,7 +14,6 @@ jobs:
         fetch-depth: 1
     - name: Install Dependencies
       run: |
-        echo ${{ matrix.name }}
         sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
         sudo apt-get update -qq
         sudo apt-get install -qq build-essential python3-numpy python3-scipy libopenmpi-dev openmpi-bin swig python3-mpi4py
@@ -27,7 +26,7 @@ jobs:
     - name: Upload Binaries 
       uses: actions/upload-artifact@v1
       with:
-        name: $ {{ matrix.name }}
+        name: $ {{ matrix.commands }}
         path: bin
   collect:
     runs-on: ubuntu-latest
@@ -37,22 +36,28 @@ jobs:
       run: |
         mkdir bin
     - name: Normal
+      env:
+        NAME: '-Denable-pywrapper=true'
       uses: actions/download-artifact@v1
       with:
-        name: Normal
+        name: "$NAME"
     - name: Reverse
+      env:
+        NAME: '-Denable-autodiff=true -Denable-normal=false'
       uses: actions/download-artifact@v1
       with:
-        name: Reverse
+        name: "$NAME"
     - name: Forward
+      env:
+        NAME: '-Denable-directdiff=true -Denable-normal=false'
       uses: actions/download-artifact@v1
       with:
-        name: Forward
+        name: "$NAME"
     - name: Move binaries
       run: |
-        mv Normal/*  bin/*
-        mv Reverse/* bin/*
-        mv Forward/* bin/*
+        mv '-Denable-pywrapper=true'/*  bin/*
+        mv '-Denable-autodiff=true -Denable-normal=false'/* bin/*
+        mv '-Denable-directdiff=true -Denable-normal=false'/* bin/*
     - name: Upload Binaries
       uses: actions/upload-artifact@v1
       with:

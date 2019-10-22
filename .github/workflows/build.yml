@@ -14,7 +14,7 @@ jobs:
         fetch-depth: 1
     - name: Install Dependencies
       run: |
-        echo "$ {{ matrix.name }}"
+        echo ${{ matrix.name }}
         sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
         sudo apt-get update -qq
         sudo apt-get install -qq build-essential python3-numpy python3-scipy libopenmpi-dev openmpi-bin swig python3-mpi4py

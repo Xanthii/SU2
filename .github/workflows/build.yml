@@ -14,7 +14,7 @@ jobs:
         sudo apt-get install -qq build-essential python3-numpy python3-scipy libopenmpi-dev openmpi-bin swig python3-mpi4py
     - name: Bootstrap and Configure
       run: |
-        ./meson.py build $INPUT_CONFIGURE_OPTIONS
+        ./meson.py build --prefix=$PWD
         ./meson.py build --reconfigure --optimization=2
         ./meson.py build --reconfigure --warnlevel=2
     - name: Build

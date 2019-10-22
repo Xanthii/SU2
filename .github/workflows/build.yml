@@ -6,10 +6,12 @@ jobs:
   build:
     strategy:
       matrix: 
-        commands: ['-Denable-directdiff=true -Denable-normal=false', '-Denable-autodiff=true -Denable-normal=false', '-Denable-pywrapper=true']
+        commands: ['-Denable-pywrapper=true', '-Denable-autodiff=true -Denable-normal=false', '-Denable-directdiff=true -Denable-normal=false']
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
     - name: Install Dependencies
       run: |
         sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
@@ -26,5 +28,42 @@ jobs:
         export SU2_RUN=$PWD/bin
         export SU2_HOME=$PWD
         export PATH=$PATH:$SU2_RUN
-        export PYTHONPATH=$PYTHONPATH:$SU2_RUN
-
+        export PYTHONPATH=$PYTHONPATH:$SU2_RUN  
+    - name: Upload Binaries
+      uses: actions/upload-artifact@v1
+      with:
+        name: ${{ matrix.commands }}
+        path: bin
+  collect:
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      BUILD_NORMAL:  '-Denable-pywrapper=true'
+      BUILD_REVERSE: '-Denable-autodiff=true -Denable-normal=false'
+      BUILD_FORWARD: '-Denable-directdiff=true -Denable-normal=false'
+    steps:
+    - name: Create directories
+      run: |
+        mkdir bin
+    - name: $BUILD_NORMAL
+      uses: actions/download-artifact@v1
+      with:
+        name: $BUILD_NORMAL
+    - name: $BUILD_REVERSE
+      uses: actions/download-artifact@v1
+      with:
+        name: $BUILD_REVERSE
+    - name: $BUILD_FORWARD
+      uses: actions/download-artifact@v1
+      with:
+        name: $BUILD_FORWARD
+    - name: Move binaries
+      run: |
+        mv $BUILD_NORMAL/*  bin/*
+        mv $BUILD_REVERSE/* bin/*
+        mv $BUILD_FORWARD/* bin/*
+    - name: Upload Binaries
+      uses: actions/upload-artifact@v1
+      with:
+        name: Binaries
+        path: bin

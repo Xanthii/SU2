@@ -49,9 +49,9 @@ jobs:
         name: '-Denable-directdiff=true -Denable-normal=false'
     - name: Move binaries
       run: |
-        mv '-Denable-pywrapper=true'/*  bin/*
-        mv '-Denable-autodiff=true -Denable-normal=false'/* bin/*
-        mv '-Denable-directdiff=true -Denable-normal=false'/* bin/*
+        mv "-Denable-pywrapper=true"/*  bin/*
+        mv "-Denable-autodiff=true -Denable-normal=false"/* bin/*
+        mv "-Denable-directdiff=true -Denable-normal=false"/* bin/*
     - name: Upload Binaries
       uses: actions/upload-artifact@v1
       with:

@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix: 
-        commands: ['-Denable-directdiff=true -Ddisable-normal=true', '-Denable-autodiff=true -Ddisable-normal=true', '-Denable-pywrapper=true']
+        commands: ['-Denable-directdiff=true -Denable-normal=false', '-Denable-autodiff=true -Denable-normal=false', '-Denable-pywrapper=true']
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1

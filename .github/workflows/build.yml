@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix: 
-        commands: ['normal -Denable-pywrapper=true', 'reverse -Denable-autodiff=true -Denable-normal=false', 'forward -Denable-directdiff=true -Denable-normal=false']
+        commands: ['-Denable-pywrapper=true', '-Denable-autodiff=true -Denable-normal=false', '-Denable-directdiff=true -Denable-normal=false']
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -14,32 +14,20 @@ jobs:
         fetch-depth: 1
     - name: Install Dependencies
       run: |
+        echo "$ {{ matrix.name }}"
         sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
         sudo apt-get update -qq
         sudo apt-get install -qq build-essential python3-numpy python3-scipy libopenmpi-dev openmpi-bin swig python3-mpi4py
     - name: Bootstrap and Configure
       run: |
-        ./meson.py ${{ matrix.commands }} --prefix=$PWD --optimization=2 --warnlevel=2
+        ./meson.py build ${{ matrix.commands }} --prefix=$PWD --optimization=2 --warnlevel=2
     - name: Build
       run: |
         ./ninja -C build install
-    - name: Upload Binaries
-      if: startsWith(matrix.commands, 'normal')
+    - name: Upload Binaries 
       uses: actions/upload-artifact@v1
       with:
-        name: Normal
-        path: bin
-    - name: Upload Binaries
-      if: startsWith(matrix.commands, 'reverse')
-      uses: actions/upload-artifact@v1
-      with:
-        name: Reverse
-        path: bin
-    - name: Upload Binaries
-      if: startsWith(matrix.commands, 'forward')
-      uses: actions/upload-artifact@v1
-      with:
-        name: Forward
+        name: $ {{ matrix.name }}
         path: bin
   collect:
     runs-on: ubuntu-latest

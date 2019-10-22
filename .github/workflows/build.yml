@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix: 
-        commands: ['-Denable-pywrapper=true', '-Denable-autodiff=true -Denable-normal=false', '-Denable-directdiff=true -Denable-normal=false']
+        commands: ['normal -Denable-pywrapper=true', 'reverse -Denable-autodiff=true -Denable-normal=false', 'forward -Denable-directdiff=true -Denable-normal=false']
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -19,49 +19,52 @@ jobs:
         sudo apt-get install -qq build-essential python3-numpy python3-scipy libopenmpi-dev openmpi-bin swig python3-mpi4py
     - name: Bootstrap and Configure
       run: |
-        ./meson.py build --prefix=$PWD ${{ matrix.commands }}
-        ./meson.py build --reconfigure --optimization=2
-        ./meson.py build --reconfigure --warnlevel=2
+        ./meson.py ${{ matrix.commands }} --prefix=$PWD --optimization=2 --warnlevel=2
     - name: Build
       run: |
         ./ninja -C build install
-        export SU2_RUN=$PWD/bin
-        export SU2_HOME=$PWD
-        export PATH=$PATH:$SU2_RUN
-        export PYTHONPATH=$PYTHONPATH:$SU2_RUN  
     - name: Upload Binaries
+      if: startsWith(matrix.commands, 'normal')
       uses: actions/upload-artifact@v1
       with:
-        name: ${{ matrix.commands }}
+        name: Normal
+        path: bin
+    - name: Upload Binaries
+      if: startsWith(matrix.commands, 'reverse')
+      uses: actions/upload-artifact@v1
+      with:
+        name: Reverse
+        path: bin
+    - name: Upload Binaries
+      if: startsWith(matrix.commands, 'forward')
+      uses: actions/upload-artifact@v1
+      with:
+        name: Forward
         path: bin
   collect:
     runs-on: ubuntu-latest
     needs: build
-    env:
-      BUILD_NORMAL:  '-Denable-pywrapper=true'
-      BUILD_REVERSE: '-Denable-autodiff=true -Denable-normal=false'
-      BUILD_FORWARD: '-Denable-directdiff=true -Denable-normal=false'
     steps:
     - name: Create directories
       run: |
         mkdir bin
-    - name: $BUILD_NORMAL
+    - name: Normal
       uses: actions/download-artifact@v1
       with:
-        name: $BUILD_NORMAL
-    - name: $BUILD_REVERSE
+        name: Normal
+    - name: Reverse
       uses: actions/download-artifact@v1
       with:
-        name: $BUILD_REVERSE
-    - name: $BUILD_FORWARD
+        name: Reverse
+    - name: Forward
       uses: actions/download-artifact@v1
       with:
-        name: $BUILD_FORWARD
+        name: Forward
     - name: Move binaries
       run: |
-        mv $BUILD_NORMAL/*  bin/*
-        mv $BUILD_REVERSE/* bin/*
-        mv $BUILD_FORWARD/* bin/*
+        mv Normal/*  bin/*
+        mv Reverse/* bin/*
+        mv Forward/* bin/*
     - name: Upload Binaries
       uses: actions/upload-artifact@v1
       with:

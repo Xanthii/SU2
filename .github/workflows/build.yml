@@ -49,9 +49,9 @@ jobs:
       - name: Move Binaries
         run: |
           mkdir bin
-          mv Base/* bin/*
-          mv Reverse/* bin/*
-          mv Forward/* bin/*
+          mv Base/* bin/
+          mv Reverse/* bin/
+          mv Forward/* bin/
       - name: Upload Binaries
         uses: actions/upload-artifact@v1
         with:

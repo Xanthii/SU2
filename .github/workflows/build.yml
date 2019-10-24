@@ -28,6 +28,7 @@ jobs:
   collect:
     runs-on: ubuntu-latest
     name: Collect Binaries
+    needs: build
     steps:
       - name: Download Base
         uses: actions/download-artifacts@v1

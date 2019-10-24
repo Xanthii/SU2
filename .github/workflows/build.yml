@@ -23,7 +23,7 @@ jobs:
       - name: Build Base
         uses: docker://su2code/build-su2
         with:
-          args: ${{github.sha}} /github/workspace ${{matrix.flags}}
+          args: ${{github.sha}} /github/workspace '${{matrix.flags}}'
       - name: Upload Binaries 
         uses: actions/upload-artifact@v1
         with:
@@ -35,15 +35,15 @@ jobs:
     needs: build
     steps:
       - name: Download Base
-        uses: actions/download-artifacts@v1
+        uses: actions/download-artifact@v1
         with:
           name: Base
       - name: Download Reverse
-        uses: actions/download-artifacts@v1
+        uses: actions/download-artifact@v1
         with:
           name: Reverse
       - name: Download Forward
-        uses: actions/download-artifacts@v1
+        uses: actions/download-artifact@v1
         with:
           name: Forward
       - name: Move Binaries
@@ -53,7 +53,7 @@ jobs:
           mv Reverse/* bin/*
           mv Forward/* bin/*
       - name: Upload Binaries
-        uses: actions/upload-artifacts@v1
+        uses: actions/upload-artifact@v1
         with:
           name: Binaries
           path: bin

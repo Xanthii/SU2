@@ -16,15 +16,19 @@ jobs:
             flags: '-Denable-directdiff=true -Denable-normal=false'          
     runs-on: ubuntu-latest
     steps:
-    - name: Build Base
-      uses: docker://su2code/build-su2
-      with:
-        args: ${{github.sha}} /github/workspace ${{matrix.flags}}
-    - name: Upload Binaries 
-      uses: actions/upload-artifact@v1
-      with:
-        name: ${{ matrix.config_set }}
-        path: bin
+      - name: Dump matrix context
+        env:
+            MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
+      - name: Build Base
+        uses: docker://su2code/build-su2
+        with:
+          args: ${{github.sha}} /github/workspace ${{matrix.flags}}
+      - name: Upload Binaries 
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.config_set }}
+          path: bin
   collect:
     runs-on: ubuntu-latest
     name: Collect Binaries

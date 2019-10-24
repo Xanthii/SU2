@@ -40,7 +40,7 @@ jobs:
         include:
           - config_set: Base
             testscript: 'parallel_regression.py'
-          - config_set: Reverse
+          - config_set: AD
             testscript: 'parallel_regression_AD.py'
     steps:
       - name: Download Base

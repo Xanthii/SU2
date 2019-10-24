@@ -1,9 +1,10 @@
-name: Build SU2
+name: Regression Testing
 
 on: [push]
 
 jobs:
   build:
+    name: Build SU2
     strategy:
       matrix: 
         config_set: [Base, Reverse, Forward]
@@ -29,10 +30,18 @@ jobs:
         with:
           name: ${{ matrix.config_set }}
           path: bin
-  collect:
+  tests:
     runs-on: ubuntu-latest
-    name: Collect Binaries
+    name: Regression Tests
     needs: build
+    strategy:
+      matrix: 
+        config_set: [Base, AD]
+        include:
+          - config_set: Base
+            testscript: 'parallel_regression.py'
+          - config_set: Reverse
+            testscript: 'parallel_regression_AD.py'
     steps:
       - name: Download Base
         uses: actions/download-artifact@v1
@@ -45,15 +54,15 @@ jobs:
       - name: Download Forward
         uses: actions/download-artifact@v1
         with:
-          name: Forward
+          name: Forward  
       - name: Move Binaries
         run: |
           mkdir bin
-          mv Base/* bin/
-          mv Reverse/* bin/
-          mv Forward/* bin/
-      - name: Upload Binaries
-        uses: actions/upload-artifact@v1
+          cp -R Base/* bin/
+          cp -R Reverse/* bin/
+          cp -R Forward/* bin/                       
+      - name: Run Tests in Container
+        uses: docker://su2code/test-su2
         with:
-          name: Binaries
-          path: bin
+          args: ${{github.sha}} develop develop /github/workspace ${{matrix.testscript}}
+  

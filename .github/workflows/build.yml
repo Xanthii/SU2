@@ -6,16 +6,23 @@ jobs:
   build:
     strategy:
       matrix: 
-        commands: ['-Denable-pywrapper=true', '-Denable-autodiff=true -Denable-normal=false', '-Denable-directdiff=true -Denable-normal=false']
+        config_set: [Base, Reverse, Forward]
+        include:
+          - config_set: Base
+            flags: '-Denable-pywrapper=true'
+          - config_set: Reverse
+            flags: '-Denable-autodiff=true -Denable-normal=false'
+          - config_set: Forward
+            flags: '-Denable-directdiff=true -Denable-normal=false'          
     runs-on: ubuntu-latest
     steps:
-    - name: Build
+    - name: Build Base
       uses: docker://su2code/build-su2
       with:
-        args: ${{github.sha}} /github/home ${{matrix.commands}}
+        args: ${{github.sha}} /github/home ${{flags}}
     - name: Upload Binaries 
       uses: actions/upload-artifact@v1
       with:
-        name: ${{ matrix.commands }}
+        name: ${{ matrix.config_set }}
         path: /github/home/bin
 

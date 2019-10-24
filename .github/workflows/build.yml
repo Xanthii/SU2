@@ -19,10 +19,36 @@ jobs:
     - name: Build Base
       uses: docker://su2code/build-su2
       with:
-        args: ${{github.sha}} /github/home ${{matrix.flags}}
+        args: ${{github.sha}} /github/workspace ${{matrix.flags}}
     - name: Upload Binaries 
       uses: actions/upload-artifact@v1
       with:
         name: ${{ matrix.config_set }}
-        path: /github/home/bin
-
+        path: bin
+  collect:
+    runs-on: ubuntu-latest
+    name: Collect Binaries
+    steps:
+      - name: Download Base
+        uses: actions/download-artifacts@v1
+        with:
+          name: Base
+      - name: Download Reverse
+        uses: actions/download-artifacts@v1
+        with:
+          name: Reverse
+      - name: Download Forward
+        uses: actions/download-artifacts@v1
+        with:
+          name: Forward
+      - name: Move Binaries
+        run: |
+          mkdir bin
+          mv Base/* bin/*
+          mv Reverse/* bin/*
+          mv Forward/* bin/*
+      - name: Upload Binaries
+        uses: actions/upload-artifacts@v1
+        with:
+          name: Binaries
+          path: bin

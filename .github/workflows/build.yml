@@ -61,7 +61,7 @@ jobs:
           cp -r Base/. bin/
           cp -r Reverse/. bin/
           cp -r Forward/. bin/
-          ls bin/                       
+          chmod a+x bin/*               
       - name: Run Tests in Container
         uses: docker://su2code/test-su2
         with:

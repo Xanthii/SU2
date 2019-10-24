@@ -19,7 +19,7 @@ jobs:
     - name: Build Base
       uses: docker://su2code/build-su2
       with:
-        args: ${{github.sha}} /github/home ${{flags}}
+        args: ${{github.sha}} /github/home ${{matrix.flags}}
     - name: Upload Binaries 
       uses: actions/upload-artifact@v1
       with:

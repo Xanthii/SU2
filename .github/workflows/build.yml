@@ -9,10 +9,8 @@ jobs:
         commands: ['-Denable-pywrapper=true', '-Denable-autodiff=true -Denable-normal=false', '-Denable-directdiff=true -Denable-normal=false']
     runs-on: ubuntu-latest
     steps:
-    - name: Login
-      run: docker login docker.pkg.github.com -u talbring -p ${{secrets.GPR_TOKEN}}
     - name: Build
-      uses: docker://docker.pkg.github.com/su2code/su2/build-su2:latest
+      uses: docker://su2code/build-su2
       with:
         args: ${{github.sha}} $HOME ${{matrix.commands}}
     - name: Upload Binaries 

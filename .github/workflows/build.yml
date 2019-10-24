@@ -58,9 +58,10 @@ jobs:
       - name: Move Binaries
         run: |
           mkdir bin
-          cp -R Base/* bin/
-          cp -R Reverse/* bin/
-          cp -R Forward/* bin/                       
+          cp -r Base/. bin/
+          cp -r Reverse/. bin/
+          cp -r Forward/. bin/
+          ls bin/                       
       - name: Run Tests in Container
         uses: docker://su2code/test-su2
         with:
